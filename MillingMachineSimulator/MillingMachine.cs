@@ -48,12 +48,12 @@ namespace MillingMachineSimulator
         {
             this.IsMouseVisible = true;
             screenCenter.X = this.Window.ClientBounds.Width / 2;
-            screenCenter.Y = this.Window.ClientBounds.Height / 2; 
+            screenCenter.Y = this.Window.ClientBounds.Height / 2;
             previousMouse = Mouse.GetState();
             Mouse.SetPosition(screenCenter.X, screenCenter.Y);
 
             Effect = new BasicEffect(graphics.GraphicsDevice);
-            CameraArc = new ArcBallCamera(new Vector3(/*64f, 16f, 64f*/0f, 0f, 0f), MathHelper.ToRadians(-200), 0f, 32f, 300f, 128f, GraphicsDevice.Viewport.AspectRatio, 0.1f, 512f); 
+            CameraArc = new ArcBallCamera(new Vector3(0f, 0f, 0f), MathHelper.ToRadians(-200), 0f, 32f, 300f, 128f, GraphicsDevice.Viewport.AspectRatio, 0.1f, 512f); //rad -30 192
             FileHelper = new FileHelper(graphics.GraphicsDevice);
             Brick = new MaterialBrick(graphics.GraphicsDevice);
             base.Initialize();
@@ -79,6 +79,8 @@ namespace MillingMachineSimulator
                 {
                     CameraArc.Rotation += MathHelper.ToRadians((mouse.X - screenCenter.X) / 2f);
                     CameraArc.Elevation += MathHelper.ToRadians((mouse.Y - screenCenter.Y) / 2f);
+                    //CameraArc.Rotation += MathHelper.ToRadians(1);
+                    //CameraArc.Elevation += MathHelper.ToRadians(1);
                     Mouse.SetPosition(screenCenter.X, screenCenter.Y);
                 }
                 if (mouse.RightButton == ButtonState.Pressed)
@@ -128,10 +130,10 @@ namespace MillingMachineSimulator
                 }
                 if (positions.Count != 0) //WOOOOT?
                 {
-                    Brick.MoveFrezStep(positions[StepCounter]);
+                    Brick.MoveFrezStep(positions[StepCounter], FileHelper.Diameter, FileHelper.Frez);
                     StepCounter++;
                 }
-                Brick.MoveFrez(positions); 
+                Brick.MoveFrez(positions, FileHelper.Diameter, FileHelper.Frez); 
             }
             Brick.Draw(CameraArc, Effect);
             base.Draw(gameTime);

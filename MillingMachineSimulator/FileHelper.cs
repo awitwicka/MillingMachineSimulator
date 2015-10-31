@@ -15,9 +15,10 @@ namespace MillingMachineSimulator
     public class FileHelper
     {
         GraphicsDevice device;
-        public int Mode; //enum
-        public int Type;
-        public int Size;
+
+        public enum FrezType { F, K };
+        public FrezType Frez = FrezType.K; 
+        public int Diameter = 10;
         private static Regex regex = new Regex(@"N[0-9]+G([0-9][0-9])X([-0-9]+[.0-9]*)Y([-0-9]+[.0-9]*)Z([-0-9]+[.0-9]*)");
         private StreamReader reader;
 
@@ -31,6 +32,13 @@ namespace MillingMachineSimulator
         {
             var stream = await file.OpenStreamForReadAsync();
             reader = new StreamReader(stream);
+            var regex = new Regex(@"([kf])([0-9]+)");
+            var match = regex.Match(file.FileType);
+            if (match.Groups[1].Value.Equals("f"))
+                Frez = FrezType.F;
+            else if (match.Groups[1].Value.Equals("k"))
+                Frez = FrezType.K;           
+            Diameter = int.Parse(match.Groups[2].Value, CultureInfo.InvariantCulture);
         }
 
         public Vector3 ReadNextLine(int resolution)

@@ -37,22 +37,23 @@ namespace MillingMachineSimulator
             InitializeBrick(Length, Width, Heigh, Unit);
         }
 
-        public void MoveFrez(List<Vector3> positions)
+        public void MoveFrez(List<Vector3> positions, int diameter, FileHelper.FrezType frez)
         {
             //List<Vector3> positions = PathData.GetPositions(begin, end, Unit);
             foreach (var v in positions)
             {
-                MoveFrezStep(v);
+                MoveFrezStep(v, diameter, frez);
             }
         }
 
-        public void MoveFrezStep(Vector3 v)
+        public void MoveFrezStep(Vector3 v, int diameter, FileHelper.FrezType frez)
         {
-            int r = 4;
+            int r = diameter/2;
             r *= Resolution;
 
             //calculate Vertices.Z
             int index;
+            float sphereZ = 0;
             for (float y = (v.Z - r); y <= (v.Z + r); y++) //do gory zaokraglić
             {
                 for (float x = (v.X - r); x <= (v.X + r); x++)
@@ -61,13 +62,14 @@ namespace MillingMachineSimulator
                     if (index >= 0)
                     {
                         Vertices[index].Normal = Vector3.Zero;
-                        var sphereZ = ((float)-Math.Sqrt((r * r) - (x - v.X) * (x - v.X) - (y - v.Z) * (y - v.Z)) + v.Y);
-                        bool freezable = ((x - v.X) * (x - v.X)) + ((y - v.Z) * (y - v.Z)) <= (r * r) &&
-                            Vertices[index].Position.Y/Unit > sphereZ;
+                        if (frez == FileHelper.FrezType.K)
+                            sphereZ = ((float)-Math.Sqrt((r * r) - (x - v.X) * (x - v.X) - (y - v.Z) * (y - v.Z)) + v.Y);
+                        else if (frez == FileHelper.FrezType.F)
+                            sphereZ = -r + v.Y;
+
+                        bool freezable = ((x - v.X) * (x - v.X)) + ((y - v.Z) * (y - v.Z)) <= (r * r) && Vertices[index].Position.Y / Unit > sphereZ;
                         if (freezable)
-                        {
                             Vertices[index].Position.Y = Unit * sphereZ; //TODO change later, upper bound
-                        }
                     }
                 }
             }
@@ -106,7 +108,7 @@ namespace MillingMachineSimulator
             effect.World = Matrix.Identity;
             effect.View = camera.View;
             effect.Projection = camera.Projection;
-            effect.DirectionalLight0.Enabled = true;
+            //effect.DirectionalLight0.Enabled = true;
             effect.DirectionalLight0.DiffuseColor = Color.White.ToVector3(); // a red light
             effect.DirectionalLight0.Direction = new Vector3(0, 1, 0);  // coming along the x-axis/pnpphj
             effect.DirectionalLight0.SpecularColor = Color.White.ToVector3();//new Vector3(0, 1, 0); // with green highlights
