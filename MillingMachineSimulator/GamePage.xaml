@@ -22,6 +22,7 @@
             <CommandBar.PrimaryCommands>
                 <AppBarButton x:Name="StartMillingButton" Label="Start Milling" Icon="Play" Click="StartMillingButton_Click"/>
                 <AppBarButton x:Name="OpenFileButton" Label="Load File" Icon="OpenFile" Click="OpenFileButton_Click"/>
+                <AppBarButton x:Name="ToggleWireframeButton" Label="Wireframe" Icon="ViewAll" Click="ToggleWireframeButton_Click"/>
             </CommandBar.PrimaryCommands>
         </CommandBar>
     </SwapChainPanel>

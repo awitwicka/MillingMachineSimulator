@@ -13,10 +13,10 @@ namespace MillingMachineSimulator
     {
         private GraphicsDeviceManager graphics;
 
+        public MaterialBrick Brick;
+        public FileHelper FileHelper;
         private BasicEffect Effect;
         private ArcBallCamera CameraArc;
-        private MaterialBrick Brick;
-        public FileHelper FileHelper;
 
         //mouse control
         private Point screenCenter;

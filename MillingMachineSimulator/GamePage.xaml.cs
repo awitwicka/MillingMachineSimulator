@@ -40,8 +40,8 @@ namespace MillingMachineSimulator
             var fileOpener = new FileOpenPicker();
             fileOpener.FileTypeFilter.Add(".k16");
             fileOpener.FileTypeFilter.Add(".f16");
-            fileOpener.FileTypeFilter.Add(".k14");
-            fileOpener.FileTypeFilter.Add(".f14");
+            fileOpener.FileTypeFilter.Add(".k12");
+            fileOpener.FileTypeFilter.Add(".f12");
 
             StorageFile file = await fileOpener.PickSingleFileAsync();
             if (file != null)
@@ -51,6 +51,11 @@ namespace MillingMachineSimulator
         private void StartMillingButton_Click(object sender, RoutedEventArgs e)
         {
             _game.StartMilling();
+        }
+
+        private void ToggleWireframeButton_Click(object sender, RoutedEventArgs e)
+        {
+            _game.Brick.IsWireframeOn = !_game.Brick.IsWireframeOn;
         }
     }
 }
