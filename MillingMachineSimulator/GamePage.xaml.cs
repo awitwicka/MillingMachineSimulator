@@ -45,6 +45,7 @@ namespace MillingMachineSimulator
 
             StorageFile file = await fileOpener.PickSingleFileAsync();
             if (file != null)
+                _game.IsWorking = false;
                 _game.FileHelper.FileLoad(file);
         }
 

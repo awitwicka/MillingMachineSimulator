@@ -26,7 +26,7 @@ namespace MillingMachineSimulator
         private MouseState previousMouse;
 
         //frez movement
-        private bool IsWorking = false;
+        public bool IsWorking = false;
         private List<Vector3> positions;
         private int StepCounter = 0;
         private Vector3 PositionBegin;
@@ -34,8 +34,11 @@ namespace MillingMachineSimulator
 
         public void StartMilling()
         {
-            PositionEnd = FileHelper.ReadNextLine(Brick.Resolution);
-            IsWorking = true;
+            if (FileHelper.IsFileLoaded)
+            {
+                PositionEnd = FileHelper.ReadNextLine(Brick.Resolution);
+                IsWorking = true;
+            }
         }
 
         public MillingMachine()
