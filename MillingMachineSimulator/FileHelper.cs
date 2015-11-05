@@ -21,7 +21,7 @@ namespace MillingMachineSimulator
         public int Diameter = 10;
         public bool IsFileLoaded = false;
         private static Regex regex = new Regex(@"N[0-9]+G([0-9][0-9])X([-0-9]+[.0-9]*)Y([-0-9]+[.0-9]*)Z([-0-9]+[.0-9]*)");
-        private StreamReader reader;
+        public StreamReader reader;
 
         public FileHelper(GraphicsDevice device)
         {
@@ -30,8 +30,6 @@ namespace MillingMachineSimulator
 
         public async void FileLoad(StorageFile file)
         {
-            var stream = await file.OpenStreamForReadAsync();
-            reader = new StreamReader(stream);
             var regex = new Regex(@"([kf])([0-9]+)");
             var match = regex.Match(file.FileType);
             if (match.Groups[1].Value.Equals("f"))
@@ -39,6 +37,10 @@ namespace MillingMachineSimulator
             else if (match.Groups[1].Value.Equals("k"))
                 Frez = FrezType.K;           
             Diameter = int.Parse(match.Groups[2].Value, CultureInfo.InvariantCulture);
+
+            var stream = await file.OpenStreamForReadAsync();
+            reader = new StreamReader(stream);
+
             IsFileLoaded = true;
         }
 
@@ -90,10 +92,24 @@ namespace MillingMachineSimulator
 
         public List<Vector3> GetPositions(Vector3 begin, Vector3 end, int resolution)
         {
+            //begin *= resolution;
+            //end *= resolution;
+            //Vector3 delta = end - begin;
+            //delta.Normalize();
+            //var unit = 1f;
+            //float stepNo = Vector3.Distance(end, begin) / unit;
+            //List<Vector3> positions = new List<Vector3>();
+
+            //for (int i = 0; i <= (int)stepNo; i++)
+            //{
+            //    positions.Add(begin + (delta * unit * i));
+            //}
+            //return positions;
+
             begin *= resolution;
             end *= resolution;
             Vector3 delta = end - begin;
-           
+
             List<Vector3> positions = new List<Vector3>();
             float max = Math.Max(Math.Abs(end.X - begin.X), Math.Abs(end.Z - begin.Z)); //max from 3 directions?
             for (int i = 0; i < (int)max; i++)
@@ -102,7 +118,5 @@ namespace MillingMachineSimulator
             }
             return positions;
         }
-
-        
     }
 }

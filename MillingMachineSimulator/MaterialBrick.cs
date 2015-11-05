@@ -51,7 +51,6 @@ namespace MillingMachineSimulator
             int r = diameter/2;
             r *= Resolution;
 
-            //calculate Vertices.Z
             int index;
             float sphereZ = 0;
             for (float y = (v.Z - r); y <= (v.Z + r); y++) //do gory zaokraglić
@@ -62,8 +61,10 @@ namespace MillingMachineSimulator
                     if (index >= 0)
                     {
                         Vertices[index].Normal = Vector3.Zero;
-                        if (frez == FileHelper.FrezType.K)
+                        if (frez == FileHelper.FrezType.K) {
+                            //sphereZ = ((float)-Math.Sqrt(Math.Abs((r * r) - (x - v.X) * (x - v.X) - (y - v.Z) * (y - v.Z))) + v.Y);
                             sphereZ = ((float)-Math.Sqrt((r * r) - (x - v.X) * (x - v.X) - (y - v.Z) * (y - v.Z)) + v.Y);
+                        }
                         else if (frez == FileHelper.FrezType.F)
                             sphereZ = -r + v.Y;
 
@@ -84,7 +85,8 @@ namespace MillingMachineSimulator
                         RecalculateNormalsForTriangle(index);
                     }
                 }
-            }       
+            }
+            vertexBuffer.SetData<VertexPositionColorNormal>(Vertices);
         }
 
         private void RecalculateNormalsForTriangle(int posStart)
@@ -129,7 +131,7 @@ namespace MillingMachineSimulator
             foreach (EffectPass pass in effect.CurrentTechnique.Passes)
             {
                 pass.Apply();
-                vertexBuffer.SetData<VertexPositionColorNormal>(Vertices);
+                //vertexBuffer.SetData<VertexPositionColorNormal>(Vertices);
                 device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, (Length+1)*(Width+1), 0, 2*Length*Width);
             }
         }

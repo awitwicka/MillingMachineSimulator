@@ -32,6 +32,8 @@ namespace MillingMachineSimulator
         private Vector3 PositionBegin;
         private Vector3 PositionEnd;
 
+        int Speed = 40;
+
         public void StartMilling()
         {
             if (FileHelper.IsFileLoaded)
@@ -119,11 +121,30 @@ namespace MillingMachineSimulator
             base.Update(gameTime);
         }
 
+        public void DoFastSimulation() 
+        {
+            if (FileHelper.IsFileLoaded)
+            {
+                PositionEnd = FileHelper.ReadNextLine(Brick.Resolution);
+                IsWorking = false;
+                while (!FileHelper.reader.EndOfStream) {
+                    PositionBegin = PositionEnd;
+                    PositionEnd = FileHelper.ReadNextLine(Brick.Resolution);
+                    positions = FileHelper.GetPositions(PositionBegin, PositionEnd, Brick.Resolution);
+                    Brick.MoveFrez(positions, FileHelper.Diameter, FileHelper.Frez);
+                }
+                StepCounter = 0;
+            }
+        }
+
+        private int TotalTimeElapsed = 0;
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.LightGray);
-            if (IsWorking) //i iz doing animation
+            var elapsed = gameTime.ElapsedGameTime.Milliseconds;
+            if (IsWorking && TotalTimeElapsed >= 1000/Speed) //i iz doing animation
             {
+                TotalTimeElapsed = 0;
                 if (positions == null || positions.Count == StepCounter)
                 {
                     PositionBegin = PositionEnd;
@@ -136,8 +157,8 @@ namespace MillingMachineSimulator
                     Brick.MoveFrezStep(positions[StepCounter], FileHelper.Diameter, FileHelper.Frez);
                     StepCounter++;
                 }
-                Brick.MoveFrez(positions, FileHelper.Diameter, FileHelper.Frez); 
             }
+            TotalTimeElapsed += elapsed;
             Brick.Draw(CameraArc, Effect);
             base.Draw(gameTime);
         }
