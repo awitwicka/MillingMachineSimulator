@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 using System.Collections.Generic;
 using Windows.Storage;
 
@@ -25,14 +26,19 @@ namespace MillingMachineSimulator
         private float scrollRate = 1.0f;
         private MouseState previousMouse;
 
-        //frez movement
+        //milling movement
         public bool IsWorking = false;
         private List<Vector3> positions;
         private int StepCounter = 0;
         private Vector3 PositionBegin;
         private Vector3 PositionEnd;
 
-        int Speed = 40;
+        //user settable
+        private float speed = 50;
+        public float Speed { get { return speed; } set { speed = value; }}
+        private double criticalMillingDepth = 2.0;
+        public double CriticalMillingDepth { get { return criticalMillingDepth; }
+            set { criticalMillingDepth = value; /*SetProperty(ref criticalMillingDepth, value);*/ } }
 
         public void StartMilling()
         {
@@ -41,6 +47,11 @@ namespace MillingMachineSimulator
                 PositionEnd = FileHelper.ReadNextLine(Brick.Resolution);
                 IsWorking = true;
             }
+        }
+
+        public void StopMilling(object sender, EventArgs e)
+        {
+            IsWorking = false;
         }
 
         public MillingMachine()
@@ -61,6 +72,7 @@ namespace MillingMachineSimulator
             CameraArc = new ArcBallCamera(new Vector3(0f, 0f, 0f), MathHelper.ToRadians(-200), 0f, 32f, 300f, 128f, GraphicsDevice.Viewport.AspectRatio, 0.1f, 512f); //rad -30 192
             FileHelper = new FileHelper(graphics.GraphicsDevice);
             Brick = new MaterialBrick(graphics.GraphicsDevice);
+            Brick.CritError += new MaterialBrick.CritErrorHandler(StopMilling);
             base.Initialize();
         }
 
@@ -131,7 +143,7 @@ namespace MillingMachineSimulator
                     PositionBegin = PositionEnd;
                     PositionEnd = FileHelper.ReadNextLine(Brick.Resolution);
                     positions = FileHelper.GetPositions(PositionBegin, PositionEnd, Brick.Resolution);
-                    Brick.MoveFrez(positions, FileHelper.Diameter, FileHelper.Frez);
+                    Brick.MoveFrez(positions, FileHelper.Diameter, FileHelper.Frez, CriticalMillingDepth);
                 }
                 StepCounter = 0;
             }
@@ -154,7 +166,7 @@ namespace MillingMachineSimulator
                 }
                 if (positions.Count != 0) //WOOOOT?
                 {
-                    Brick.MoveFrezStep(positions[StepCounter], FileHelper.Diameter, FileHelper.Frez);
+                    Brick.MoveFrezStep(positions[StepCounter], FileHelper.Diameter, FileHelper.Frez, CriticalMillingDepth);
                     StepCounter++;
                 }
             }

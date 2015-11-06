@@ -4,13 +4,17 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System.Windows;
+using Windows.UI.Popups;
 
 namespace MillingMachineSimulator 
 {
     public class MaterialBrick
     {
         GraphicsDevice device;
-         
+        public delegate void CritErrorHandler(object sender, EventArgs e);
+        public event CritErrorHandler CritError;
+
         public int Length = 150;
         public int Width = 250;
         public int Heigh = 50; //43
@@ -37,18 +41,18 @@ namespace MillingMachineSimulator
             InitializeBrick(Length, Width, Heigh, Unit);
         }
 
-        public void MoveFrez(List<Vector3> positions, int diameter, FileHelper.FrezType frez)
+        public void MoveFrez(List<Vector3> positions, int diameter, FileHelper.FrezType frez, double critDepth)
         {
             //List<Vector3> positions = PathData.GetPositions(begin, end, Unit);
             foreach (var v in positions)
             {
-                MoveFrezStep(v, diameter, frez);
+                MoveFrezStep(v, diameter, frez, critDepth);
             }
         }
 
-        public void MoveFrezStep(Vector3 v, int diameter, FileHelper.FrezType frez)
+        public async void MoveFrezStep(Vector3 v, int diameter, FileHelper.FrezType frez, double critDepth)
         {
-            int r = diameter/2;
+            int r = diameter / 2;
             r *= Resolution;
 
             int index;
@@ -61,21 +65,30 @@ namespace MillingMachineSimulator
                     if (index >= 0)
                     {
                         Vertices[index].Normal = Vector3.Zero;
-                        if (frez == FileHelper.FrezType.K) {
+                        if (frez == FileHelper.FrezType.K)
+                        {
                             //sphereZ = ((float)-Math.Sqrt(Math.Abs((r * r) - (x - v.X) * (x - v.X) - (y - v.Z) * (y - v.Z))) + v.Y);
                             sphereZ = ((float)-Math.Sqrt((r * r) - (x - v.X) * (x - v.X) - (y - v.Z) * (y - v.Z)) + v.Y);
                         }
                         else if (frez == FileHelper.FrezType.F)
-                            sphereZ = -r + v.Y;
+                            sphereZ = v.Y;
 
                         bool freezable = ((x - v.X) * (x - v.X)) + ((y - v.Z) * (y - v.Z)) <= (r * r) && Vertices[index].Position.Y / Unit > sphereZ;
+                        if (sphereZ <= critDepth)
+                        {
+                                CritError(this, null);
+                                var dialog = new MessageDialog("Milling under critical Level!");
+                                await dialog.ShowAsync();
+                                goto outer; //TODO SEROIUSLY DO STH WITH IT!
+                        }
                         if (freezable)
                             Vertices[index].Position.Y = Unit * sphereZ; //TODO change later, upper bound
                     }
                 }
             }
+            outer:;
             //calculate normals
-            for (float y = (v.Z - r -1); y <= (v.Z + r + 1); y++) //do gory zaokraglić
+            for (float y = (v.Z - r - 1); y <= (v.Z + r + 1); y++) //do gory zaokraglić
             {
                 for (float x = (v.X - r - 1); x <= (v.X + r + 1); x++)
                 {
@@ -86,7 +99,7 @@ namespace MillingMachineSimulator
                     }
                 }
             }
-            vertexBuffer.SetData<VertexPositionColorNormal>(Vertices);
+            vertexBuffer.SetData<VertexPositionColorNormal>(Vertices);          
         }
 
         private void RecalculateNormalsForTriangle(int posStart)

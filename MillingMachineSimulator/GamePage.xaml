@@ -14,9 +14,15 @@
         </Grid.RowDefinitions>
         <CommandBar Grid.Row="1" IsOpen="True">
             <CommandBar.Content>
-                <StackPanel Padding="16,4">
-                    <Slider Width="360" Value="{Binding Speed}" Maximum="70"/>
-                    <TextBlock Text="Animation Speed"/>
+                <StackPanel Padding="16,4" Orientation="Horizontal">
+                    <StackPanel>
+                        <Slider x:Name="SpeedSlider" Width="360" Value="50"  ValueChanged="SpeedSlider_ValueChanged" Maximum="100"/>
+                        <TextBlock Text="Animation Speed"/>
+                    </StackPanel>
+                    <StackPanel>
+                        <TextBox x:Name="CriticalDepthTextBox" Text="{Binding CriticalMillingDepth, Mode=TwoWay}" Margin="10,0,0,0" Height="40" />
+                        <TextBlock Text="Critical Millin Limit"/>
+                    </StackPanel>
                 </StackPanel>
             </CommandBar.Content>
             <CommandBar.PrimaryCommands>

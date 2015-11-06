@@ -26,24 +26,19 @@ namespace MillingMachineSimulator
     {
 		readonly MillingMachine _game;
         private AppBarToggleButton LastMillingDiameterButton;
-
-        //x moves per second
-        private float speed = 20;
-        public float Speed
-        {
-            get { return speed; }
-            set { speed = value; }
-        }
+        private bool IsInitiated = false;
 
         public GamePage()
         {
+
             this.InitializeComponent();
 
 			// Create the game.
 			var launchArguments = string.Empty;
             _game = MonoGame.Framework.XamlGame<MillingMachine>.Create(launchArguments, Window.Current.CoreWindow, swapChainPanel);
-            //this.DataContext = _game;
+            this.DataContext = _game;
             LastMillingDiameterButton = Mill16Button;
+            IsInitiated = true;
         }
 
         private async void OpenFileButton_Click(object sender, RoutedEventArgs e)
@@ -145,6 +140,13 @@ namespace MillingMachineSimulator
                 default:
                     break;
             }
+        }
+
+        private void SpeedSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+        {
+            var s = (Slider)sender;
+            if (IsInitiated)//TODO: handle objects better when not yet initiated
+                _game.Speed = (float)s.Value;
         }
     }
 }
