@@ -25,6 +25,7 @@ namespace MillingMachineSimulator
         private bool moveMode = false;
         private float scrollRate = 1.0f;
         private MouseState previousMouse;
+        private KeyboardState oldState;
 
         //milling movement
         public bool IsWorking = false;
@@ -89,49 +90,92 @@ namespace MillingMachineSimulator
 
         protected override void Update(GameTime gameTime)
         {
-            if (this.IsActive)
+            //if (this.IsActive)
+            //{
+            //    MouseState mouse = Mouse.GetState();
+            //    if (moveMode)
+            //    {
+            //        CameraArc.Rotation += MathHelper.ToRadians((mouse.X - screenCenter.X) / 2f);
+            //        CameraArc.Elevation += MathHelper.ToRadians((mouse.Y - screenCenter.Y) / 2f);
+            //        //CameraArc.Rotation += MathHelper.ToRadians(1);
+            //        //CameraArc.Elevation += MathHelper.ToRadians(1);
+            //        Mouse.SetPosition(screenCenter.X, screenCenter.Y);
+            //    }
+            //    if (mouse.RightButton == ButtonState.Pressed)
+            //    {
+            //        if (!moveMode && previousMouse.RightButton == ButtonState.Released)
+            //        {
+            //            if (graphics.GraphicsDevice.Viewport.Bounds.Contains(new Point(mouse.X, mouse.Y)))
+            //            {
+            //                moveMode = true;
+            //                saveMousePoint.X = mouse.X;
+            //                saveMousePoint.Y = mouse.Y;
+            //                Mouse.SetPosition(screenCenter.X, screenCenter.Y);
+            //                this.IsMouseVisible = false;
+            //            }
+            //        }
+            //    }
+            //    else
+            //    {
+            //        if (moveMode)
+            //        {
+            //            moveMode = false;
+            //            Mouse.SetPosition(saveMousePoint.X, saveMousePoint.Y);
+            //            this.IsMouseVisible = true;
+            //        }
+            //    }
+            //    if (mouse.ScrollWheelValue - previousMouse.ScrollWheelValue != 0)
+            //    {
+            //        float wheelChange = mouse.ScrollWheelValue - previousMouse.ScrollWheelValue;
+            //        CameraArc.ViewDistance -= (wheelChange / 120) * scrollRate;
+            //    }
+            //    previousMouse = mouse;
+            //}
+            //base.Update(gameTime);
+
+            MouseState mouse = Mouse.GetState();
+            KeyboardState newState = Keyboard.GetState();
+            if (newState.IsKeyDown(Keys.W))
             {
-                MouseState mouse = Mouse.GetState();
-                if (moveMode)
-                {
-                    CameraArc.Rotation += MathHelper.ToRadians((mouse.X - screenCenter.X) / 2f);
-                    CameraArc.Elevation += MathHelper.ToRadians((mouse.Y - screenCenter.Y) / 2f);
-                    //CameraArc.Rotation += MathHelper.ToRadians(1);
-                    //CameraArc.Elevation += MathHelper.ToRadians(1);
-                    Mouse.SetPosition(screenCenter.X, screenCenter.Y);
+                //pressed
+                if (!oldState.IsKeyDown(Keys.W))
+                {   
+                    CameraArc.Elevation -= MathHelper.ToRadians(2);
                 }
-                if (mouse.RightButton == ButtonState.Pressed)
-                {
-                    if (!moveMode && previousMouse.RightButton == ButtonState.Released)
-                    {
-                        if (graphics.GraphicsDevice.Viewport.Bounds.Contains(new Point(mouse.X, mouse.Y)))
-                        {
-                            moveMode = true;
-                            saveMousePoint.X = mouse.X;
-                            saveMousePoint.Y = mouse.Y;
-                            Mouse.SetPosition(screenCenter.X, screenCenter.Y);
-                            this.IsMouseVisible = false;
-                        }
-                    }
-                }
-                else
-                {
-                    if (moveMode)
-                    {
-                        moveMode = false;
-                        Mouse.SetPosition(saveMousePoint.X, saveMousePoint.Y);
-                        this.IsMouseVisible = true;
-                    }
-                }
-                if (mouse.ScrollWheelValue - previousMouse.ScrollWheelValue != 0)
-                {
-                    float wheelChange = mouse.ScrollWheelValue - previousMouse.ScrollWheelValue;
-                    CameraArc.ViewDistance -= (wheelChange / 120) * scrollRate;
-                }
-                previousMouse = mouse;
             }
-            base.Update(gameTime);
-        }
+            if (newState.IsKeyDown(Keys.S))
+            {
+                //pressed
+                if (!oldState.IsKeyDown(Keys.S))
+                {
+                    CameraArc.Elevation += MathHelper.ToRadians(2);
+                }
+            }
+            if (newState.IsKeyDown(Keys.A))
+            {
+                //pressed
+                if (!oldState.IsKeyDown(Keys.A))
+                {
+                    CameraArc.Rotation -= MathHelper.ToRadians(2);
+                }
+            }
+            if (newState.IsKeyDown(Keys.D))
+            {
+                //pressed
+                if (!oldState.IsKeyDown(Keys.D))
+                {
+                    CameraArc.Rotation += MathHelper.ToRadians(2);
+                }
+            }
+            if (mouse.ScrollWheelValue - previousMouse.ScrollWheelValue != 0)
+            {
+                float wheelChange = mouse.ScrollWheelValue - previousMouse.ScrollWheelValue;
+                CameraArc.ViewDistance -= (wheelChange / 120) * scrollRate;
+            }
+
+            previousMouse = mouse;
+            //oldState = newState;
+        }    
 
         public void DoFastSimulation() 
         {
