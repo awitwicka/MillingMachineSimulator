@@ -15,10 +15,10 @@ namespace MillingMachineSimulator
         public delegate void CritErrorHandler(object sender, EventArgs e);
         public event CritErrorHandler CritError;
 
-        public int Length = 150;
-        public int Width = 250;
-        public int Heigh = 50; //43
-        public int Resolution = 1; //set max
+        public int Length = 130; //150
+        public int Width = 230; //250
+        public int Heigh = 50; //50
+        public int Resolution = 2; //set max
         public float Unit = 0.5f;
         private int VertexOffset;
 
@@ -151,7 +151,7 @@ namespace MillingMachineSimulator
         public void InitializeBrick(int length, int width, int heigh, float unit)
         {
             int count = 0;
-            short[] indices = new short[6*length*width];
+            int[] indices = new int[6*length*width];
             for (int y = 0; y <= width; y++)
             {
                 for (int x = 0; x <= length; x++)
@@ -165,12 +165,12 @@ namespace MillingMachineSimulator
             {
                 for (int x = 0; x < length; x++)
                 {
-                    indices[count * 6] = (short)(y * (length + 1) + x);
-                    indices[1 + (count * 6)] = (short)((y + 1) * (length + 1) + x);
-                    indices[2 + (count * 6)] = (short)(y * (length + 1) + x + 1);
-                    indices[3 + (count * 6)] = (short)((y + 1) * (length + 1) + x);
-                    indices[4 + (count * 6)] = (short)((y + 1) * (length + 1) + x + 1);
-                    indices[5 + (count * 6)] = (short)(y * (length + 1) + x + 1);
+                    indices[count * 6] = (int)(y * (length + 1) + x);
+                    indices[1 + (count * 6)] = (int)((y + 1) * (length + 1) + x);
+                    indices[2 + (count * 6)] = (int)(y * (length + 1) + x + 1);
+                    indices[3 + (count * 6)] = (int)((y + 1) * (length + 1) + x);
+                    indices[4 + (count * 6)] = (int)((y + 1) * (length + 1) + x + 1);
+                    indices[5 + (count * 6)] = (int)(y * (length + 1) + x + 1);
 
                     RecalculateNormalsForTriangle(y * length + x);
                     count++;
@@ -180,7 +180,7 @@ namespace MillingMachineSimulator
             vertexBuffer = new VertexBuffer(device, typeof(VertexPositionColorNormal), (Length + 1) * (Width + 1), BufferUsage.WriteOnly);
             vertexBuffer.SetData<VertexPositionColorNormal>(Vertices);
 
-            indexBuffer = new IndexBuffer(device, typeof(short), indices.Length, BufferUsage.WriteOnly);
+            indexBuffer = new IndexBuffer(device, typeof(int), indices.Length, BufferUsage.WriteOnly);
             indexBuffer.SetData(indices);
         }
 
