@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using Windows.Storage;
+using Windows.UI.Popups;
 
 namespace MillingMachineSimulator
 {
@@ -12,8 +13,14 @@ namespace MillingMachineSimulator
     /// </summary>
     public class MillingMachine : Game
     {
+        VertexPositionColor[] limitSquareVerts;
+        VertexBuffer limitvertexBuffer;
+        IndexBuffer limitindexBuffer;
         private GraphicsDeviceManager graphics;
 
+        Vector3 pos = new Vector3(0,0,0);
+        public SquarePrimitive MillingLimit;
+        public Cutter Cutter1;
         public MaterialBrick Brick;
         public FileHelper FileHelper;
         private BasicEffect Effect;
@@ -39,7 +46,13 @@ namespace MillingMachineSimulator
         public float Speed { get { return speed; } set { speed = value; }}
         private double criticalMillingDepth = 2.0;
         public double CriticalMillingDepth { get { return criticalMillingDepth; }
-            set { criticalMillingDepth = value; /*SetProperty(ref criticalMillingDepth, value);*/ } }
+            set {
+                criticalMillingDepth = value;
+                pos.Y = (float)CriticalMillingDepth * Brick.Unit * Brick.Resolution;
+                MillingLimit = new SquarePrimitive(graphics.GraphicsDevice, 10, 140);
+                /*SetProperty(ref criticalMillingDepth, value);*/
+            }
+        }
 
         public void StartMilling()
         {
@@ -74,6 +87,8 @@ namespace MillingMachineSimulator
             FileHelper = new FileHelper(graphics.GraphicsDevice);
             Brick = new MaterialBrick(graphics.GraphicsDevice);
             Brick.CritError += new MaterialBrick.CritErrorHandler(StopMilling);
+            Cutter1 = new Cutter(graphics.GraphicsDevice, 10);
+            MillingLimit = new SquarePrimitive(graphics.GraphicsDevice, 10, 140);
             base.Initialize();
         }
 
@@ -205,18 +220,36 @@ namespace MillingMachineSimulator
                 {
                     PositionBegin = PositionEnd;
                     PositionEnd = FileHelper.ReadNextLine(Brick.Resolution);
+                    if (PositionEnd.X == -100 && PositionEnd.Y == -100 && PositionEnd.Z == -100)
+                        PositionEnd = PositionBegin;
                     positions = FileHelper.GetPositions(PositionBegin, PositionEnd, Brick.Resolution);
                     StepCounter = 0;
                 }
                 if (positions.Count != 0) //WOOOOT?
                 {
                     Brick.MoveFrezStep(positions[StepCounter], FileHelper.Diameter, FileHelper.Frez, CriticalMillingDepth);
+                    Cutter1.Position = positions[StepCounter] * Brick.Unit;
+                    Cutter1.Diameter = FileHelper.Diameter * (Brick.Unit * Brick.Resolution);
+                    Cutter1.Type = FileHelper.Frez;
                     StepCounter++;
                 }
             }
+            /*if (FileHelper.Frez == FileHelper.FrezType.F)
+            {
+                if (PositionBegin.Y != PositionEnd.Y)
+                {
+                    var dialog = new MessageDialog("K-frez cannot move along Y axis");
+                    dialog.ShowAsync();
+                }
+            }*/
+
             TotalTimeElapsed += elapsed;
             Brick.Draw(CameraArc, Effect);
+            Cutter1.Draw(CameraArc, Effect);
+            MillingLimit.Draw(Matrix.CreateTranslation(pos), CameraArc.View, CameraArc.Projection, Color.Red);
             base.Draw(gameTime);
         }
     }
+    
+
 }

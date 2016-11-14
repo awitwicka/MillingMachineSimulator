@@ -17,8 +17,8 @@ namespace MillingMachineSimulator
 
         public int Length = 130; //150
         public int Width = 230; //250
-        public int Heigh = 50; //50
-        public int Resolution = 2; //set max
+        public int Heigh = 55; //50
+        public int Resolution = 1; //set max
         public float Unit = 0.5f;
         private int VertexOffset;
 
@@ -55,6 +55,10 @@ namespace MillingMachineSimulator
             int r = diameter / 2;
             r *= Resolution;
 
+            //make origin point of a sphere-like frez at the bottom instead of middle
+            if (frez == FileHelper.FrezType.K)
+                v.Y += r;
+
             int index;
             float sphereZ = 0;
             for (float y = (v.Z - r); y <= (v.Z + r); y++) //do gory zaokraglić
@@ -74,7 +78,7 @@ namespace MillingMachineSimulator
                             sphereZ = v.Y;
 
                         bool freezable = ((x - v.X) * (x - v.X)) + ((y - v.Z) * (y - v.Z)) <= (r * r) && Vertices[index].Position.Y / Unit > sphereZ;
-                        if (sphereZ <= critDepth)
+                        if (sphereZ <= critDepth*Resolution)
                         {
                                 CritError(this, null);
                                 var dialog = new MessageDialog("Milling under critical Level!");
@@ -107,7 +111,7 @@ namespace MillingMachineSimulator
             for (int i = 0; i < 2; i++)
             {
                 Vector3 side1 = Vertices[posStart].Position - Vertices[posStart + 1].Position;
-                Vector3 side2 = Vertices[posStart].Position - Vertices[(Length + 1)].Position;
+                Vector3 side2 = Vertices[posStart].Position - Vertices[(Length) + 1].Position;
                 Vector3 normal = Vector3.Cross(side1, side2);
                 normal.Normalize();
                 Vertices[posStart].Normal += normal;

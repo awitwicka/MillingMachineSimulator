@@ -104,14 +104,19 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="ArcBallCamera.cs" />
+    <Compile Include="Cutter.cs" />
     <Compile Include="FileHelper.cs" />
     <Compile Include="GamePage.xaml.cs">
       <DependentUpon>GamePage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="GeometricPrimitive.cs" />
     <Compile Include="MillingMachine.cs" />
     <Compile Include="MaterialBrick.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SpherePrimitive.cs" />
+    <Compile Include="SquarePrimitive.cs" />
     <Compile Include="VertexPositionColorNormal.cs" />
+    <Compile Include="VertexPositionNormal.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="project.json" />

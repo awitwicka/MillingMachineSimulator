@@ -56,7 +56,8 @@ namespace MillingMachineSimulator
                 var z = float.Parse(match.Groups[4].Value, CultureInfo.InvariantCulture);
                 return new Vector3(x, z, y);
             }
-            else { return new Vector3(0, 0, 0); }
+            //TODO: handle end of line with return
+            else { return new Vector3(-100, -100, -100); }
         }
 
         public void ReadAllLines(int resolution)
