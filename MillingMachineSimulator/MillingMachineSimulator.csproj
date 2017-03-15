@@ -7,8 +7,8 @@
     <ProjectGuid>{E90B122B-7BC2-45FF-96BE-92B83212975E}</ProjectGuid>
     <OutputType>AppContainerExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MillingMachineSimulator</RootNamespace>
-    <AssemblyName>MillingMachineSimulator</AssemblyName>
+    <RootNamespace>MillingMachineSimulator2</RootNamespace>
+    <AssemblyName>MillingMachineSimulator2</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion>10.0.10240.0</TargetPlatformVersion>

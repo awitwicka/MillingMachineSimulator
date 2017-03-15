@@ -13,12 +13,14 @@ namespace MillingMachineSimulator
     /// </summary>
     public class MillingMachine : Game
     {
+        public bool showPath = false;
+
+        private int count = 0;
         VertexPositionColor[] limitSquareVerts;
-        VertexBuffer limitvertexBuffer;
-        IndexBuffer limitindexBuffer;
+        VertexPositionColor[] vertexPositionColors = new VertexPositionColor[100000];
         private GraphicsDeviceManager graphics;
 
-        Vector3 pos = new Vector3(0,0,0);
+        Vector3 pos = new Vector3(0, 0, 0);
         public SquarePrimitive MillingLimit;
         public Cutter Cutter1;
         public MaterialBrick Brick;
@@ -43,10 +45,13 @@ namespace MillingMachineSimulator
 
         //user settable
         private float speed = 50;
-        public float Speed { get { return speed; } set { speed = value; }}
+        public float Speed { get { return speed; } set { speed = value; } }
         private double criticalMillingDepth = 2.0;
-        public double CriticalMillingDepth { get { return criticalMillingDepth; }
-            set {
+        public double CriticalMillingDepth
+        {
+            get { return criticalMillingDepth; }
+            set
+            {
                 criticalMillingDepth = value;
                 pos.Y = (float)CriticalMillingDepth * Brick.Unit * Brick.Resolution;
                 MillingLimit = new SquarePrimitive(graphics.GraphicsDevice, 10, 140);
@@ -59,7 +64,11 @@ namespace MillingMachineSimulator
             if (FileHelper.IsFileLoaded)
             {
                 PositionEnd = FileHelper.ReadNextLine(Brick.Resolution);
+                tmpPos = new Vector3(PositionEnd.X * Brick.Unit * Brick.Resolution, PositionEnd.Y * Brick.Unit * Brick.Resolution + (FileHelper.Diameter * Brick.Unit * Brick.Resolution / 2), PositionEnd.Z * Brick.Unit * Brick.Resolution);
+                vertexPositionColors[count] = new VertexPositionColor(tmpPos, Color.Red);
+                count++;
                 IsWorking = true;
+
             }
         }
 
@@ -154,7 +163,7 @@ namespace MillingMachineSimulator
             {
                 //pressed
                 if (!oldState.IsKeyDown(Keys.W))
-                {   
+                {
                     CameraArc.Elevation -= MathHelper.ToRadians(2);
                 }
             }
@@ -190,38 +199,53 @@ namespace MillingMachineSimulator
 
             previousMouse = mouse;
             //oldState = newState;
-        }    
+        }
 
-        public void DoFastSimulation() 
+        public void DoFastSimulation()
         {
             if (FileHelper.IsFileLoaded)
             {
                 PositionEnd = FileHelper.ReadNextLine(Brick.Resolution);
+                tmpPos = new Vector3(PositionEnd.X * Brick.Unit * Brick.Resolution, PositionEnd.Y * Brick.Unit * Brick.Resolution + (FileHelper.Diameter * Brick.Unit * Brick.Resolution / 2), PositionEnd.Z * Brick.Unit * Brick.Resolution);
+                vertexPositionColors[count] = new VertexPositionColor(tmpPos, Color.Red);
+                count++;
                 IsWorking = false;
-                while (!FileHelper.reader.EndOfStream) {
+                while (!FileHelper.reader.EndOfStream)
+                {
                     PositionBegin = PositionEnd;
                     PositionEnd = FileHelper.ReadNextLine(Brick.Resolution);
+                    tmpPos = new Vector3(PositionEnd.X * Brick.Unit * Brick.Resolution, PositionEnd.Y * Brick.Unit * Brick.Resolution + (FileHelper.Diameter * Brick.Unit * Brick.Resolution / 2), PositionEnd.Z * Brick.Unit * Brick.Resolution);
+                    vertexPositionColors[count] = new VertexPositionColor(tmpPos, Color.Red);
+                    count++;
                     positions = FileHelper.GetPositions(PositionBegin, PositionEnd, Brick.Resolution);
                     Brick.MoveFrez(positions, FileHelper.Diameter, FileHelper.Frez, CriticalMillingDepth);
                 }
                 StepCounter = 0;
             }
         }
-
+        Vector3 tmpPos;
         private int TotalTimeElapsed = 0;
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.LightGray);
             var elapsed = gameTime.ElapsedGameTime.Milliseconds;
-            if (IsWorking && TotalTimeElapsed >= 1000/Speed) //i iz doing animation
+            if (IsWorking && TotalTimeElapsed >= 1000 / Speed) //i iz doing animation
             {
                 TotalTimeElapsed = 0;
                 if (positions == null || positions.Count == StepCounter)
                 {
                     PositionBegin = PositionEnd;
                     PositionEnd = FileHelper.ReadNextLine(Brick.Resolution);
+
+                    tmpPos = new Vector3(PositionEnd.X*Brick.Unit*Brick.Resolution, PositionEnd.Y * Brick.Unit * Brick.Resolution + (FileHelper.Diameter*Brick.Unit*Brick.Resolution/2), PositionEnd.Z * Brick.Unit * Brick.Resolution);
+                    vertexPositionColors[count] = new VertexPositionColor(tmpPos, Color.Red);
+                    count++;
+
                     if (PositionEnd.X == -100 && PositionEnd.Y == -100 && PositionEnd.Z == -100)
+                    {
                         PositionEnd = PositionBegin;
+                        count--;
+                    }
                     positions = FileHelper.GetPositions(PositionBegin, PositionEnd, Brick.Resolution);
                     StepCounter = 0;
                 }
@@ -245,11 +269,21 @@ namespace MillingMachineSimulator
 
             TotalTimeElapsed += elapsed;
             Brick.Draw(CameraArc, Effect);
-            Cutter1.Draw(CameraArc, Effect);
+            Cutter1.Draw(CameraArc, Effect);        
             MillingLimit.Draw(Matrix.CreateTranslation(pos), CameraArc.View, CameraArc.Projection, Color.Red);
+
+            EffectTechnique effectTechnique = Effect.Techniques[0];
+            EffectPassCollection effectPassCollection = effectTechnique.Passes;
+            foreach (EffectPass pass in effectPassCollection)
+            {
+                pass.Apply();
+                if (showPath && count > 1)
+                    GraphicsDevice.DrawUserPrimitives(PrimitiveType.LineStrip, vertexPositionColors, 0, count-1);
+            }
+
             base.Draw(gameTime);
         }
     }
-    
+
 
 }

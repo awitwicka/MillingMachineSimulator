@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System.Windows;
 using Windows.UI.Popups;
 
-namespace MillingMachineSimulator 
+namespace MillingMachineSimulator
 {
     public class MaterialBrick
     {
@@ -15,12 +15,14 @@ namespace MillingMachineSimulator
         public delegate void CritErrorHandler(object sender, EventArgs e);
         public event CritErrorHandler CritError;
 
-        public int Length = 130; //150
-        public int Width = 230; //250
-        public int Heigh = 55; //50
-        public int Resolution = 1; //set max
+        public int Length = 150; //150
+        public int Width = 250; //250
+        public int Heigh = 50; //50
+        public int Resolution = 2; //set max
         public float Unit = 0.5f;
         private int VertexOffset;
+        private int offsetX;
+        private int offsetY;
 
         //dusplay mode
         public bool IsWireframeOn = false;
@@ -37,7 +39,9 @@ namespace MillingMachineSimulator
             Heigh *= Resolution;
             Unit /= Resolution;
             Vertices = new VertexPositionColorNormal[(Length + 1) * (Width + 1)];
-            VertexOffset = (Length+1) * (Width / 2) + (Length+1)/2;
+            offsetX = (Length + 1) / 2;
+            offsetY = (Width / 2);
+            VertexOffset = (Length + 1) * (Width / 2) + (Length + 1) / 2;
             InitializeBrick(Length, Width, Heigh, Unit);
         }
 
@@ -66,7 +70,8 @@ namespace MillingMachineSimulator
                 for (float x = (v.X - r); x <= (v.X + r); x++)
                 {
                     index = (int)((int)(y) * (Length + 1) + x) + VertexOffset; //TOdO: warunek glebiej niz na r 
-                    if (index >= 0)
+                    //if (index < (y) * (Length + 1) + x) + VertexOff)
+                    if (index >= 0 && x + offsetX > -1 && x + offsetX < (Length+1) && y+offsetY>-1 && y+offsetY<(Width))
                     {
                         Vertices[index].Normal = Vector3.Zero;
                         if (frez == FileHelper.FrezType.K)
@@ -97,13 +102,13 @@ namespace MillingMachineSimulator
                 for (float x = (v.X - r - 1); x <= (v.X + r + 1); x++)
                 {
                     index = (int)((int)(y) * (Length + 1) + x) + VertexOffset;
-                    if (index >= 0)
+                    if (index >= 0 && x + offsetX > -1 && x + offsetX < (Length + 1) && y + offsetY > -1 && y + offsetY < (Width))
                     {
                         RecalculateNormalsForTriangle(index);
                     }
                 }
             }
-            vertexBuffer.SetData<VertexPositionColorNormal>(Vertices);          
+            vertexBuffer.SetData<VertexPositionColorNormal>(Vertices);
         }
 
         private void RecalculateNormalsForTriangle(int posStart)
@@ -115,10 +120,10 @@ namespace MillingMachineSimulator
                 Vector3 normal = Vector3.Cross(side1, side2);
                 normal.Normalize();
                 Vertices[posStart].Normal += normal;
-                Vertices[posStart + (Length+1)].Normal += normal;
+                Vertices[posStart + (Length + 1)].Normal += normal;
                 Vertices[posStart + 1].Normal += normal;
             }
-        } 
+        }
 
         public void Draw(ArcBallCamera camera, BasicEffect effect)
         {
@@ -149,18 +154,18 @@ namespace MillingMachineSimulator
             {
                 pass.Apply();
                 //vertexBuffer.SetData<VertexPositionColorNormal>(Vertices);
-                device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, (Length+1)*(Width+1), 0, 2*Length*Width);
+                device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, (Length + 1) * (Width + 1), 0, 2 * Length * Width);
             }
         }
         public void InitializeBrick(int length, int width, int heigh, float unit)
         {
             int count = 0;
-            int[] indices = new int[6*length*width];
+            int[] indices = new int[6 * length * width];
             for (int y = 0; y <= width; y++)
             {
                 for (int x = 0; x <= length; x++)
                 {
-                    Vertices[count] = new VertexPositionColorNormal(new Vector3(x*unit - (length*unit/2), heigh*unit, y* unit - (width * unit / 2)), Color.LightGray, Vector3.Zero);
+                    Vertices[count] = new VertexPositionColorNormal(new Vector3(x * unit - (length * unit / 2), heigh * unit, y * unit - (width * unit / 2)), Color.LightGray, Vector3.Zero);
                     count++;
                 }
             }

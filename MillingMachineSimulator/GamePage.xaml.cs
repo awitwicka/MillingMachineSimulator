@@ -24,7 +24,7 @@ namespace MillingMachineSimulator
     /// </summary>
     public sealed partial class GamePage : Page
     {
-		readonly MillingMachine _game;
+        readonly MillingMachine _game;
         private AppBarToggleButton LastMillingDiameterButton;
         private bool IsInitiated = false;
 
@@ -33,8 +33,8 @@ namespace MillingMachineSimulator
 
             this.InitializeComponent();
 
-			// Create the game.
-			var launchArguments = string.Empty;
+            // Create the game.
+            var launchArguments = string.Empty;
             _game = MonoGame.Framework.XamlGame<MillingMachine>.Create(launchArguments, Window.Current.CoreWindow, swapChainPanel);
             this.DataContext = _game;
             LastMillingDiameterButton = Mill16Button;
@@ -45,9 +45,10 @@ namespace MillingMachineSimulator
         {
             var fileOpener = new FileOpenPicker();
             fileOpener.FileTypeFilter.Add(".k16");
-            fileOpener.FileTypeFilter.Add(".f16");
-            fileOpener.FileTypeFilter.Add(".k12");
+            fileOpener.FileTypeFilter.Add(".k08");
+            fileOpener.FileTypeFilter.Add(".k01");
             fileOpener.FileTypeFilter.Add(".f12");
+            fileOpener.FileTypeFilter.Add(".f10");
 
             StorageFile file = await fileOpener.PickSingleFileAsync();
             if (file != null)
@@ -61,19 +62,20 @@ namespace MillingMachineSimulator
                 MillingTypeButton.IsChecked = true;
 
             LastMillingDiameterButton.IsChecked = false;
-            if (_game.FileHelper.Diameter == 18) {
-                Mill18Button.IsChecked = true;
-                LastMillingDiameterButton = Mill18Button;
-            }
             if (_game.FileHelper.Diameter == 16)
             {
                 Mill16Button.IsChecked = true;
                 LastMillingDiameterButton = Mill16Button;
             }
-            if (_game.FileHelper.Diameter == 14)
+            if (_game.FileHelper.Diameter == 8)
             {
-                Mill14Button.IsChecked = true;
-                LastMillingDiameterButton = Mill14Button;
+                Mill8Button.IsChecked = true;
+                LastMillingDiameterButton = Mill8Button;
+            }
+            if (_game.FileHelper.Diameter == 1)
+            {
+                Mill1Button.IsChecked = true;
+                LastMillingDiameterButton = Mill1Button;
             }
             if (_game.FileHelper.Diameter == 12)
             {
@@ -117,17 +119,17 @@ namespace MillingMachineSimulator
             b.IsChecked = true;
             switch (b.Name)
             {
-                case "Mill18Button":
-                    _game.FileHelper.Diameter = 18;
-                    LastMillingDiameterButton = Mill18Button;
-                    break;
                 case "Mill16Button":
                     _game.FileHelper.Diameter = 16;
                     LastMillingDiameterButton = Mill16Button;
                     break;
-                case "Mill14Button":
-                    _game.FileHelper.Diameter = 14;
-                    LastMillingDiameterButton = Mill14Button;
+                case "Mill8Button":
+                    _game.FileHelper.Diameter = 8;
+                    LastMillingDiameterButton = Mill8Button;
+                    break;
+                case "Mill1Button":
+                    _game.FileHelper.Diameter = 1;
+                    LastMillingDiameterButton = Mill1Button;
                     break;
                 case "Mill12Button":
                     _game.FileHelper.Diameter = 12;
@@ -148,5 +150,11 @@ namespace MillingMachineSimulator
             if (IsInitiated)//TODO: handle objects better when not yet initiated
                 _game.Speed = (float)s.Value;
         }
+
+        private void ShowHidePath_Click(object sender, RoutedEventArgs e)
+        {
+            _game.showPath = !(_game.showPath);
+        }
+
     }
 }

@@ -26,25 +26,26 @@
                 </StackPanel>
             </CommandBar.Content>
             <CommandBar.PrimaryCommands>
+                <AppBarButton x:Name="ShowHidePath" Label="Show Path" Icon="Bullets"  Click="ShowHidePath_Click"/>
                 <AppBarButton x:Name="StartMillingButton" Label="Start Milling" Icon="Play" Click="StartMillingButton_Click"/>
                 <AppBarButton x:Name="QuickFinishButton" Label="Quick Finish" Icon="Next" Click="QuickFinishButton_Click"/>
                 <AppBarButton x:Name="OpenFileButton" Label="Load File" Icon="OpenFile" Click="OpenFileButton_Click"/>
                 <AppBarButton x:Name="ToggleWireframeButton" Label="Wireframe" Icon="ViewAll" Click="ToggleWireframeButton_Click"/>
                 <AppBarSeparator/>
                 <AppBarToggleButton x:Name="MillingTypeButton" Label="Flat Milling" Click="MillingTypeButton_Click" Icon="Globe"/>
-                <AppBarToggleButton x:Name="Mill18Button" Label="18mm" Click="MillingDiameterButton_Click">
-                    <AppBarToggleButton.Icon>
-                        <FontIcon Glyph="18" FontFamily="Segoe UI"/>
-                    </AppBarToggleButton.Icon>
-                </AppBarToggleButton>
                 <AppBarToggleButton x:Name="Mill16Button" Label="16mm" Click="MillingDiameterButton_Click">
                     <AppBarToggleButton.Icon>
                         <FontIcon Glyph="16" FontFamily="Segoe UI"/>
                     </AppBarToggleButton.Icon>
                 </AppBarToggleButton>
-                <AppBarToggleButton x:Name="Mill14Button" Label="14mm" Click="MillingDiameterButton_Click">
+                <AppBarToggleButton x:Name="Mill8Button" Label="8mm" Click="MillingDiameterButton_Click">
                     <AppBarToggleButton.Icon>
-                        <FontIcon Glyph="14" FontFamily="Segoe UI"/>
+                        <FontIcon Glyph="8" FontFamily="Segoe UI"/>
+                    </AppBarToggleButton.Icon>
+                </AppBarToggleButton>
+                <AppBarToggleButton x:Name="Mill1Button" Label="1mm" Click="MillingDiameterButton_Click">
+                    <AppBarToggleButton.Icon>
+                        <FontIcon Glyph="1" FontFamily="Segoe UI"/>
                     </AppBarToggleButton.Icon>
                 </AppBarToggleButton>
                 <AppBarToggleButton x:Name="Mill12Button" Label="12mm" Click="MillingDiameterButton_Click">
